@@ -1,0 +1,72 @@
+specification_item = SpecificationItem()
+        if (response.xpath('//ul[@class="parameter "]/li[2]/span/text()').extract_first() == "Danh b\u1ea1:"):         
+            if (response.xpath('//ul[@class="parameter "]/li[1]/div/a[1]/text()').extract_first() is not None):
+                specification_item['display']=response.xpath('//ul[@class="parameter "]/li[1]/div/a[1]/text()').extract_first() + response.xpath('//ul[@class="parameter "]/li[1]/div/text()').extract_first()   
+            else:
+                specification_item['display']=response.xpath('//ul[@class="parameter "]/li[1]/div/text()').extract_first()
+                
+            if (response.xpath('//ul[@class="parameter "]/li[3]/span/text()').extract_first() == 'Th\u1ebb nh\u1edb ngoài:'):
+                specification_item['battery']=response.xpath('//ul[@class="parameter "]/li[6]/div/text()').extract_first()
+                specification_item['storage']=response.xpath('//ul[@class="parameter "]/li[3]/div/a/text()').extract_first()
+            else:
+                specification_item['battery']=response.xpath('//ul[@class="parameter "]/li[5]/div/text()').extract_first()
+                specification_item['storage']=None
+
+            if (response.xpath('//ul[@class="parameter "]/li[4]/span/text()').extract_first() == 'Camera:'):
+                specification_item['battery']=response.xpath('//ul[@class="parameter "]/li[7]/div/text()').extract_first()
+                specification_item['rear_camera']=response.xpath('//ul[@class="parameter "]/li[4]/div/a/text()').extract_first()
+            else:
+                specification_item['rear_camera']=None
+
+            specification_item['operating_system']=None           
+            specification_item['front_camera']=None
+            specification_item['ram']=None
+            specification_item['cpu']=None
+            
+        else:
+            specification_item['display']=response.xpath('//ul[@class="parameter "]/li[1]/div/text()').extract_first() + response.xpath('//ul[@class="parameter "]/li[1]/div/a[1]/text()').extract_first()
+            if (response.xpath('//ul[@class="parameter "]/li[1]/div/a[2]/text()').extract_first() is not None):
+                specification_item['display']=response.xpath('//ul[@class="parameter "]/li[1]/div/a[1]/text()').extract_first() + response.xpath('//ul[@class="parameter "]/li[1]/div/text()').extract_first() + response.xpath('//ul[@class="parameter "]/li[1]/div/a[2]/text()').extract_first()
+            
+            specification_item['operating_system']=response.xpath('//ul[@class="parameter "]/li[2]/div/a/text()').extract_first()
+            if (not specification_item['operating_system']):
+                specification_item['operating_system']=response.xpath('//ul[@class="parameter "]/li[2]/div/text()').extract_first()
+
+            specification_item['battery']=response.xpath('//ul[@class="parameter "]/li[10]/div/text()').extract_first()
+            if (not specification_item['battery']):
+                specification_item['battery']=response.xpath('//ul[@class="parameter "]/li[9]/div/text()').extract_first()
+                if (not specification_item['battery']):
+                    specification_item['battery']=response.xpath('//ul[@class="parameter "]/li[8]/div/text()').extract_first()
+
+            specification_item['rear_camera']=response.xpath('//ul[@class="parameter "]/li[3]/div/text()').extract_first()
+            if (not specification_item['rear_camera']):
+                specification_item['rear_camera']=response.xpath('//ul[@class="parameter "]/li[3]/div/a/text()').extract_first()
+
+            specification_item['front_camera']=response.xpath('//ul[@class="parameter "]/li[4]/div/text()').extract_first()
+            specification_item['cpu']=response.xpath('//ul[@class="parameter "]/li[5]/div/text()').extract_first()
+            if (not specification_item['cpu']):
+                specification_item['cpu']=response.xpath('//ul[@class="parameter "]/li[5]/div/a/text()').extract_first()
+            specification_item['ram']=response.xpath('//ul[@class="parameter "]/li[6]/div/text()').extract_first()
+            
+            specification_item['storage']=response.xpath('//ul[@class="parameter "]/li[7]/div/text()').extract_first()
+
+        specification_item['brand']=response.xpath('//ul[@class="breadcrumb"]/li[@class="brand"]/a/text()').extract_first()
+        specification_item['date_crawl_product']=self.timestamp
+        specification_item['product_name']=response.meta['product_name']
+        specification_item['product_provider'] = 1
+        yield specification_item
+        item = SpecificationItem()
+
+2020-04-07 19:49:27 [scrapy.core.scraper] DEBUG: Scraped from <200 https://www.thegioididong.com/dtdd/realme-5-4gb>
+{'battery': '5000 mAh',
+ 'brand': 'Realme',
+ 'cpu': 'Snapdragon 665 8 nhân',
+ 'date_crawl_product': '2020-04-07 19:39:37',
+ 'display': ' IPS LCD HD+ 6.5" ',
+ 'front_camera': 'Android 9.0 (Pie)',
+ 'operating_system': '13 MP',
+ 'product_name': 'Realme 5 (4GB/128GB)',
+ 'product_provider': 1,
+ 'ram': '4 GB',
+ 'rear_camera': 'Chính 12 MP & Ph\u1ee5 8 MP, 2 MP, 2 MP',
+ 'storage': '128 GB'}
