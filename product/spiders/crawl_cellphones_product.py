@@ -38,7 +38,7 @@ class CrawlerSpider(Spider):
                 price = product.xpath('div[@class="lt-product-group-info"]/div[@class="price-box"]/span[@class="regular-price"]/span/text()').extract_first()
             price=price.replace('\xa0\u20ab','')
 
-            if (price != "\u0110\u0103ng k\xfd nh\u1eadn tin"):
+            if (price != "\u0110\u0103ng k\xfd nh\u1eadn tin" or price.find('liên h\u1ec7') < 0):
                 item = ProductItem()
                 item['product_price'] = price    
                 item['product_name'] = product.xpath('div[@class="lt-product-group-info"]/a/h3/text()').extract_first().replace('\t','').replace(' Chính h\xe3ng','').replace('\u0110i\u1ec7n Tho\u1ea1i ','').replace(' chính h\xe3ng','')

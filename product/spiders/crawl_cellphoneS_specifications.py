@@ -17,9 +17,10 @@ class CrawlerSpider(Spider):
     allowed_domains = ["cellphones.com.vn"]
     start_urls = [
         "https://cellphones.com.vn/mobile.html"
-        
     ]
-    link_product = {}
+    link_product = {
+        "https://cellphones.com.vn/reamle-c3i.html" : "Realme C3i",
+    }
 
     ts = time.time()
     timestamp = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
@@ -47,11 +48,10 @@ class CrawlerSpider(Spider):
         """
 
     def start_requests(self):
-        for url in self.start_urls:
-            yield SplashRequest(url=url,callback=self.parse, args= {"wait" : 3})
-            #yield SplashRequest(url="https://cellphones.com.vn/samsung-galaxy-note-10-chinh-hang.html",callback=self.parse_item, args= {"wait" : 3},meta={
-            #                    "splash": {"endpoint": "execute", "args": {"lua_source": self.script}}})
-
+        # for url in self.start_urls:
+        #     yield SplashRequest(url=url,callback=self.parse, args= {"wait" : 3})
+        yield SplashRequest(url="https://cellphones.com.vn/reamle-c3i.html",callback=self.parse_item,args= {"wait" : 3},meta={
+                            "splash": {"endpoint": "execute", "args": {"lua_source": self.script}} , "product_name" : "Realme C3i"})  
     def parse(self, response):
         
         products = Selector(response).xpath('//div[@class="products-container"]/ul[@class="cols cols-5"]/li')
@@ -94,7 +94,7 @@ class CrawlerSpider(Spider):
         item['front_camera'] = None
         item['operating_system'] = None
         item['rear_camera'] = None
-        item['battery'] = None
+        item['battery'] = 'Not update'
         item['storage'] = None
         item['ram'] = None
         item['cpu'] = None
@@ -153,7 +153,9 @@ class CrawlerSpider(Spider):
 
                 if(item_information == 'H\xe3ng s\u1ea3n xu\u1ea5t'): 
                     item['brand'] =  item_value
-
+        
+        if(item['display'] is None):
+            item['display'] =  'Not update'
         if(item['brand'] is None):
             item['brand'] =  product_name[:product_name.find(' ')]
         item['product_provider'] = 3

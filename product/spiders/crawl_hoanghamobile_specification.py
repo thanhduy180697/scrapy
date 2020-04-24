@@ -48,7 +48,7 @@ class CrawlerSpider(Spider):
     def start_requests(self):
         for url in self.start_urls:
             yield SplashRequest(url=url,callback=self.parse, args= {"wait" : 3})
-
+            #yield SplashRequest(url="https://hoanghamobile.com/blackberry-evolve-chinh-hang-p14411.html",callback=self.parse_item, args= {"wait" : 3}, meta = {"product_name" : "Blackberry Evolve"})
 
     def parse(self, response):
 
@@ -88,6 +88,7 @@ class CrawlerSpider(Spider):
         count_product = 0
         reset = 0
         product = OrderedDict(reversed(list(self.link_product.items())))
+        self.len_product = len(product)
         craped_product = 0
         if(self.crawl):
             for key,value in product.items():
@@ -96,7 +97,7 @@ class CrawlerSpider(Spider):
                 if(reset == 15):
                     time.sleep(15)
                     reset = 0
-                if(count_product >= 100):    
+                if(count_product > 40 and count_product < 50):    
                     yield SplashRequest(url=key,callback=self.parse_item,args= {"wait" : 3} ,meta={
                                     "splash": {"endpoint": "execute", "args": {"lua_source": self.script}}, "product_name" : value}) 
 
@@ -106,10 +107,10 @@ class CrawlerSpider(Spider):
 
         item = SpecificationItem()
         item['operating_system'] = None
-        item['display'] = None
+        item['display'] = 'Not update'
         item['front_camera'] = None
         item['rear_camera'] = None
-        item['battery'] = None
+        item['battery'] = 'Not update'
         item['storage'] = None
         item['ram'] = None
         item['cpu'] = None
@@ -163,8 +164,13 @@ class CrawlerSpider(Spider):
         item['product_provider'] = 5
         item['date_crawl_product'] = self.timestamp
         item['product_name'] = product_name
+        if(item['battery'] is None):
+            item['battery'] = 'Not update'
+        if(item['display'] is None):
+            item['display'] = 'Not update'
         yield item
-
+        self.len_product -= 1
+        print("Con lai so luong product can crawl la {}".format(self.len_product))
     
 
        

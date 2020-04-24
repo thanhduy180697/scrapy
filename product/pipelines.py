@@ -151,6 +151,7 @@ class ProductPipeline(object):
         record = (item['link_image'],item['product_link'],item['date_crawl_product'],product_id)
         self.cursor.execute(query_update_product,record)      
         self.conn.commit()
+        self.insert_price(item)
         print("Record product updated successfully ")
 
     def process_item(self, item, spider):

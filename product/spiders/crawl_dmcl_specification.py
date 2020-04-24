@@ -10,6 +10,7 @@ from urllib.parse import urljoin
 import datetime
 import time
 from scrapy.shell import inspect_response
+from collections import OrderedDict
 
 class CrawlerSpider(Spider):
     name = "crawler_specifications_dienmaycholon"
@@ -51,7 +52,7 @@ class CrawlerSpider(Spider):
 
     def start_requests(self):
         for url in self.start_urls:
-            #yield SplashRequest(url="https://dienmaycholon.vn/dien-thoai-di-dong/oppo-a5s-32gb",callback=self.parse_item, args= {"wait" : 3})
+            #yield SplashRequest(url="https://dienmaycholon.vn/dien-thoai-di-dong/samsung-galaxy-a9-128gb",callback=self.parse_item, args= {"wait" : 3}, meta = {"product_name" : "Samsung Galaxy A9, 128GB "})
             yield SplashRequest(url=url,callback=self.parse, args= {"wait" : 3},meta={
                             "splash": {"endpoint": "execute", "args": {"lua_source": self.script}}})
         
@@ -64,19 +65,24 @@ class CrawlerSpider(Spider):
             product_name = product_name.replace('Di \u0110\u1ed9ng ','').replace('B\u1ed9 S\u1ea3n Ph\u1ea9m ','')
             link = response.urljoin(product.xpath('div[@class="item_product"]/div[@class="pro_infomation"]/a/@href').extract_first()) 
             self.link_product.update({'{}'.format(link) : '{}'.format(product_name)})
-
-        for key,value in self.link_product.items():
+        
+        product = OrderedDict(reversed(list(self.link_product.items())))
+        self.len_product = len(product)
+        count_product = 0
+        for key,value in product.items():
+            count_product +=1
+            # if(count_product >= 15):
             yield SplashRequest(url=key,callback=self.parse_item,args= {"wait" : 3} , meta = {"product_name" : value})              
 
     def parse_item(self,response):
         product_name  = response.meta['product_name']
 
         item = SpecificationItem()
-        item['display'] = None
+        item['display'] = 'Not update'
         item['front_camera'] = None
         item['operating_system'] = None
         item['rear_camera'] = None
-        item['battery'] = None
+        item['battery'] = 'Not update'
         item['storage'] = None
         item['ram'] = None
         item['cpu'] = None
@@ -106,7 +112,7 @@ class CrawlerSpider(Spider):
                     rear_camera = data[data.find('/') + 1:]
                     item['rear_camera'] =  rear_camera.strip()
 
-                if(item_information.lower().find('pin') >= 0 ):
+                if(item_information.lower().find('pin:') >= 0 ):
                      
                     data = item_information[item_information.find(':')+1:]
                     item['battery'] = data.strip()
@@ -158,7 +164,8 @@ class CrawlerSpider(Spider):
         itemRating['product_name']  = product_name
         itemRating['product_provider'] = 6
         yield itemRating
-
+        self.len_product -= 1
+        print("Con lai so luong product can crawl la {}".format(self.len_product))
 
 
         

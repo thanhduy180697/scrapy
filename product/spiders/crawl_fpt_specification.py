@@ -40,8 +40,8 @@ class CrawlerSpider(Spider):
             item = SpecificationItem()
             price = specification.xpath('div[@class="fs-lpil-if"]/div[@class="fs-lpilname"]/div[@class="fs-lpil-price"]/p/text()').extract_first()
             product_name = specification.xpath('a[@class="fs-lpil-img"]/@title').extract_first()
-            item['display'] = None
-            item['battery'] = None
+            item['display'] = 'Not update'
+            item['battery'] = 'Not update'
             item['ram'] = None
             item['cpu'] = None
             item['operating_system'] =None
