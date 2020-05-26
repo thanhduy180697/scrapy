@@ -1,7 +1,6 @@
 from scrapy import Spider
 from scrapy.selector import Selector
 from ..items import ProductItem
-from ..items import RatingItem
 from scrapy.exceptions import NotConfigured
 from scrapy_splash import SplashRequest
 import urllib.request
@@ -51,15 +50,14 @@ class CrawlerSpider(Spider):
 
     def parse(self, response):
 
-        questions = Selector(response).xpath('//ul[@class="homeproduct  "]/li[@class="item"]')
-        questions_feature = Selector(response).xpath('//ul[@class="homeproduct  "]/li[@class="item feature"]')
+        questions = Selector(response).xpath('//ul[@class="homeproduct  "]/li')
         
         for question in questions:
             price = question.xpath('a/div[@class="price"]/strong/text()').extract_first()
             if(price is not None):
                 item = ProductItem()
                 item['product_name'] = question.xpath('a/h3/text()').extract_first()
-                item['product_price'] =price.extract_first().replace('\xa0\u20ab','').replace('\u20ab','')
+                item['product_price'] =price.replace('\xa0\u20ab','').replace('\u20ab','')
                 item['product_link'] = response.urljoin(question.xpath('a/@href').extract_first())
                 item['link_image'] = question.xpath('a/img/@src').extract_first()
                 item['product_provider'] = 1
@@ -68,21 +66,6 @@ class CrawlerSpider(Spider):
                     item['link_image'] = question.xpath('a/img/@data-original').extract_first()
                 yield item
             #if(question.xpath('a/label[@class="preorder"]').extract_first() is None):
-
-
-        for question in questions_feature:
-            price = question.xpath('a/div[@class="price"]/strong/text()').extract_first()
-            if(price is not None):
-                item = ProductItem()
-                item['product_name'] = question.xpath('a/h3/text()').extract_first()
-                item['product_price'] = question.xpath('a/div[@class="price"]/strong/text()').extract_first().replace('\xa0\u20ab','').replace('\u20ab','')
-                item['product_link'] = response.urljoin(question.xpath('a/@href').extract_first())
-                item['link_image'] = question.xpath('a/img/@src').extract_first()
-                item['product_provider'] = 1
-                item['date_crawl_product'] = self.timestamp
-                if item['link_image'] is None:
-                    item['link_image'] = question.xpath('a/img/@data-original').extract_first()
-                yield item
 
  
 

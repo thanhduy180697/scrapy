@@ -1,7 +1,6 @@
 from scrapy import Spider
 from scrapy.selector import Selector
 from ..items import ReviewItem
-from ..items import RatingItem
 from scrapy.exceptions import NotConfigured
 from scrapy_splash import SplashRequest
 import urllib.request
@@ -92,11 +91,6 @@ class CrawlerSpider(Spider):
                 self.count_crawl = 0
                 return
          #Update rating product
-        itemRating = RatingItem()
-        itemRating['average_rating']= response.xpath('//div[@class="toprt"]/div[@class="crt"]/div[@class="lcrt"]/@data-gpa').extract_first()
-        itemRating['product_name']  = response.xpath('//ul[@class="breadcrumb"]/li[4]/a/text()').extract_first()
-        itemRating['product_provider'] = 1
-        
-        yield itemRating
+
 
 #3600

@@ -29,11 +29,6 @@ class ReviewItem(scrapy.Item):
     product_provider=scrapy.Field()
     date_crawl_product=scrapy.Field()
 
-class RatingItem(scrapy.Item):
-    average_rating=scrapy.Field()
-    product_name=scrapy.Field()
-    product_provider=scrapy.Field()
-
 
 class SpecificationItem(scrapy.Item):
     display=scrapy.Field()
@@ -45,6 +40,7 @@ class SpecificationItem(scrapy.Item):
     cpu=scrapy.Field()
     brand=scrapy.Field()
     storage=scrapy.Field()
+    average_rating=scrapy.Field()
     product_name=scrapy.Field()
     product_provider=scrapy.Field()
     date_crawl_product=scrapy.Field()

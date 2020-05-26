@@ -83,7 +83,6 @@ class CrawlerSpider(Spider):
                 self.count_crawl += 1
                 yield review
             else:
-                print("Da crawl xong 40 lan")
                 self.count_crawl = 0
                 return
         

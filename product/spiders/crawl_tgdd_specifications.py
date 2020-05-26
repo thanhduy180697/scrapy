@@ -8,6 +8,7 @@ from unidecode import unidecode
 from urllib.parse import urljoin
 import datetime
 import time
+from collections import OrderedDict
 
 class CrawlerSpider(Spider):
     name = "crawler_specifications_tgdd"
@@ -17,6 +18,7 @@ class CrawlerSpider(Spider):
         "https://www.thegioididong.com/dtdd",
     ]
     ts = time.time()
+    link_product = {}
     timestamp = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
     limit = 10
     count_crawl = 0
@@ -46,25 +48,26 @@ class CrawlerSpider(Spider):
             # yield SplashRequest(url="https://www.thegioididong.com/dtdd/xiaomi-redmi-note-9s",callback=self.parse_item, args= {"wait" :3}, meta = {"product_name" : "Xiaomi Redmi Note 9S"})
             yield SplashRequest(url=url,callback=self.parse, args= {"wait" :3},meta={
                                         "splash": {"endpoint": "execute", "args": {"lua_source": self.script}}})
+    
     def parse(self, response):
-
         questions = Selector(response).xpath('//ul[@class="homeproduct  "]/li[@class="item"]')
-        questions_feature = Selector(response).xpath('//ul[@class="homeproduct  "]/li[@class="item feature"]')
-        
         for question in questions:
-            product_name = question.xpath('a/h3/text()').extract_first()
-            if(question.xpath('a/label[@class="preorder"]').extract_first() is None):
+            price = question.xpath('a/div[@class="price"]/strong/text()').extract_first()
+            if(price is not None and question.xpath('a/label[@class="preorder"]').extract_first() is None):
+                product_name = question.xpath('a/h3/text()').extract_first()
                 url = question.xpath('a/@href').extract_first()
                 url_item=response.urljoin(url)
-                yield SplashRequest(url=url_item,callback=self.parse_item, args= {"wait" : 1} , meta = {"product_name" : product_name})
+                self.link_product.update({'{}'.format(url_item) : '{}'.format(product_name)})
+                
+        # list_product = OrderedDict(reversed(list(self.link_product.items())))
+        list_product = self.link_product
+        self.len_product = len(list_product)
+        count_product = 0
+        for key,value in list_product.items():
+            count_product +=1
+            # if(count_product >= 15):
+            yield SplashRequest(url=key,callback=self.parse_item, args= {"wait" : 1} , meta = {"product_name" : value})      
 
-        for question in questions_feature:
-            product_name = question.xpath('a/h3/text()').extract_first()
-            url = question.xpath('a/@href').extract_first()
-            url_item=response.urljoin(url)
-            yield SplashRequest(url=url_item,callback=self.parse_item, args= {"wait" : 1} , meta = {"product_name" : product_name})
-
- 
     def parse_item(self,response):
         item = SpecificationItem()
         item['display'] = None
@@ -78,6 +81,8 @@ class CrawlerSpider(Spider):
 
         for i in range(11):
             item_information=response.xpath('//ul[@class="parameter "]/li[{}]/span/text()'.format(i+1)).extract_first()
+            item_information_temp=response.xpath('//ul[@class="parameter "]/li[{}]/span/a/text()'.format(i+1)).extract_first()
+
             item_value_main = response.xpath('//ul[@class="parameter "]/li[{}]/div/text()'.format(i+1)).extract_first()
             item_value_temp = response.xpath('//ul[@class="parameter "]/li[{}]/div/a/text()'.format(i+1)).extract_first()     
             
@@ -118,17 +123,27 @@ class CrawlerSpider(Spider):
                 item['ram'] =  item_value_main
                 if(item['ram'] is None):
                     item['ram'] =  item_value_temp
-                
+            elif(item_information_temp == 'RAM:'):
+                item['ram'] =  item_value_main
+                if(item['ram'] is None):
+                    item['ram'] =  item_value_temp
+                    
             if(item_information == 'CPU:'):
                 item['cpu'] =  item_value_main
                 if(item['cpu'] is None):
                     item['cpu'] =  item_value_temp
 
         item['brand']=response.xpath('//ul[@class="breadcrumb"]/li[@class="brand"]/a/text()').extract_first()
+        if(item['brand'] is not None):
+            item['brand'] = item['brand'].strip().replace('\n','')
         item['date_crawl_product']=self.timestamp
         item['product_name']=response.meta['product_name']
         item['product_provider'] = 1
+        item['average_rating']= response.xpath('//div[@class="toprt"]/div[@class="crt"]/div[@class="lcrt "]/@data-gpa').extract_first()
         yield item
+        self.len_product -= 1
+        print("Con lai so luong product can crawl la {}".format(self.len_product))
+
 
                      
 

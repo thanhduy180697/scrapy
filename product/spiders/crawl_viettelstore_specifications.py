@@ -1,7 +1,6 @@
 from scrapy import Spider
 from scrapy.selector import Selector
 from ..items import SpecificationItem
-from ..items import RatingItem
 from scrapy.exceptions import NotConfigured
 from scrapy_splash import SplashRequest
 import urllib.request
@@ -138,12 +137,7 @@ class CrawlerSpider(Spider):
         item['product_provider'] = 4
         item['date_crawl_product'] = self.timestamp
         item['product_name'] = product_name
-        yield item
-
-        rating = RatingItem()
-        rating['product_name'] = product_name
-        rating['product_provider'] = 4
-
+       
         rating_multi = 0
         rating_sum = 0
         temp = 5
@@ -154,13 +148,14 @@ class CrawlerSpider(Spider):
                 rating_sum = rating_sum + int(rat)
                 temp = temp - 1
 
-        if(rating_multi == 0 or rating == 0):
-            rating['average_rating'] = None
+        if(rating_multi == 0 or rating_sum == 0):
+            item['average_rating'] = None
         else: 
             rating_item = round(rating_multi / rating_sum,2)
-            rating['average_rating'] = ''
-            rating['average_rating'] = rating['average_rating'] + str(rating_item)
-        yield rating
+            item['average_rating'] = ''
+            item['average_rating'] = item['average_rating'] + str(rating_item)
+
+        yield item
 
      
         

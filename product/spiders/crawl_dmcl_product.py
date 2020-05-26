@@ -1,7 +1,6 @@
 from scrapy import Spider
 from scrapy.selector import Selector
 from ..items import ProductItem
-from ..items import RatingItem
 from scrapy.exceptions import NotConfigured
 from scrapy_splash import SplashRequest
 import urllib.request
@@ -72,7 +71,7 @@ class CrawlerSpider(Spider):
             yield item
            
 #113
-
+#111 25/5/2020
        
 
 

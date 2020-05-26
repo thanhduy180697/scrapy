@@ -1,7 +1,6 @@
 from scrapy import Spider
 from scrapy.selector import Selector
 from ..items import SpecificationItem
-from ..items import RatingItem
 from scrapy.exceptions import NotConfigured
 from scrapy_splash import SplashRequest
 import urllib.request
@@ -18,9 +17,6 @@ class CrawlerSpider(Spider):
     start_urls = [
         "https://cellphones.com.vn/mobile.html"
     ]
-    link_product = {
-        "https://cellphones.com.vn/reamle-c3i.html" : "Realme C3i",
-    }
 
     ts = time.time()
     timestamp = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
@@ -161,18 +157,8 @@ class CrawlerSpider(Spider):
         item['product_provider'] = 3
         item['date_crawl_product'] = self.timestamp
         item['product_name'] = product_name.replace('\t','').replace(' Chính h\xe3ng','').replace('\u0110i\u1ec7n Tho\u1ea1i ','').replace(' chính h\xe3ng','')
+        item['average_rating']= response.xpath('//p[@class="averageRatings"]/text()').extract_first()
         yield item
-
-        itemRating = RatingItem()
-        itemRating['average_rating']= response.xpath('//p[@class="averageRatings"]/text()').extract_first()
-
-        itemRating['product_name']  = product_name
-        if(itemRating['product_name'] is None):
-            itemRating['product_name']  = response.xpath('//div[@class="container"]/p[@class="col-md-4"]/text()').extract_first()
-        itemRating['product_name'] = itemRating['product_name'].replace('\t','').replace(' Chính h\xe3ng','').replace('\u0110i\u1ec7n Tho\u1ea1i ','').replace(' chính h\xe3ng','')
-        
-        itemRating['product_provider'] = 3
-        yield itemRating
 
 
 

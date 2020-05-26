@@ -1,7 +1,6 @@
 from scrapy import Spider
 from scrapy.selector import Selector
 from ..items import SpecificationItem
-from ..items import RatingItem
 from scrapy.exceptions import NotConfigured
 from scrapy_splash import SplashRequest
 import urllib.request
@@ -66,8 +65,8 @@ class CrawlerSpider(Spider):
             link = response.urljoin(product.xpath('div[@class="item_product"]/div[@class="pro_infomation"]/a/@href').extract_first()) 
             self.link_product.update({'{}'.format(link) : '{}'.format(product_name)})
         
-        product = OrderedDict(reversed(list(self.link_product.items())))
-        self.len_product = len(product)
+        list_product = OrderedDict(reversed(list(self.link_product.items())))
+        self.len_product = len(list_product)
         count_product = 0
         for key,value in product.items():
             count_product +=1
@@ -155,15 +154,9 @@ class CrawlerSpider(Spider):
         # if(item['ram'].find('Không') >= 0):
         #     item['ram'] = None
     
+        item['average_rating'] = None
+        item['average_rating']= response.xpath('//div[@class="rating_detail"]/input[@checked="checked"]/@value').extract_first()
         yield item
-
-        itemRating = RatingItem()
-        itemRating['average_rating'] = None
-        itemRating['average_rating']= response.xpath('//div[@class="rating_detail"]/input[@checked="checked"]/@value').extract_first()
-
-        itemRating['product_name']  = product_name
-        itemRating['product_provider'] = 6
-        yield itemRating
         self.len_product -= 1
         print("Con lai so luong product can crawl la {}".format(self.len_product))
 

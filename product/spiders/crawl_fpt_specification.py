@@ -2,7 +2,6 @@ from scrapy import Spider
 from scrapy.selector import Selector
 from scrapy import Request
 from ..items import SpecificationItem
-from ..items import RatingItem
 from scrapy.exceptions import NotConfigured
 from scrapy_splash import SplashRequest
 import urllib.request
@@ -87,7 +86,6 @@ class CrawlerSpider(Spider):
             self.index= self.index + 1           
             for i in range(2,self.last_page+1):
                 url_page = "https://fptshop.com.vn/dien-thoai?sort=gia-cao-den-thap&trang={}".format(i)
-                print("Day la trang {}".format(i))
                 yield SplashRequest(url=url_page,callback=self.parse, args= {"wait" : 1})
         self.count = self.count + 1
         if(self.count == self.last_page):
@@ -133,14 +131,12 @@ class CrawlerSpider(Spider):
         if(item['storage'] == 'Không'):
             item['storage'] = None    
         item['brand'] = response.xpath('//ul[@class="fs-breadcrumb"]/li[3]/a/text()').extract_first()
-        yield item
 
-        itemRating = RatingItem()
-        itemRating['average_rating']= response.xpath('//div[@id="danh-gia-nhan-xet"]/div[@class="fs-dttrating"]/div[@class="fs-dtrt-row clearfix"]/div[@class="fs-dtrt-col fs-dtrt-c1"]/h5/text()').extract_first()
-        if(itemRating['average_rating'] is not None):
-            itemRating['average_rating'] = itemRating['average_rating'].replace('/5','').replace(',','.')
-        itemRating['product_name']  = response.xpath('//ul[@class="fs-breadcrumb"]/li[@class="active"]/text()').extract_first()
-        itemRating['product_provider'] = 2
-        yield itemRating
+        item['average_rating']= response.xpath('//div[@class="fs-dtrt-col fs-dtrt-c1"]/h5/text()').extract_first()
+        if(item['average_rating'] is not None):
+            item['average_rating'] = item['average_rating'].replace('/5','').replace(',','.')
+        item['product_name']  = response.xpath('//ul[@class="fs-breadcrumb"]/li[@class="active"]/text()').extract_first()
+        item['product_provider'] = 2
+        yield item
 
 
