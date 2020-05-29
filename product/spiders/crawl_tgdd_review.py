@@ -18,7 +18,7 @@ class CrawlerSpider(Spider):
     ]
     ts = time.time()
     timestamp = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
-    limit = 40
+    limit = 50
     count_crawl = 0
 
     script = """
@@ -87,7 +87,7 @@ class CrawlerSpider(Spider):
                 self.count_crawl += 1
                 yield review
             else:
-                print("Da crawl xong 10 lan")
+                print("Da crawl xong 50 lan")
                 self.count_crawl = 0
                 return
          #Update rating product

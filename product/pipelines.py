@@ -13,7 +13,7 @@ from product.items import SpecificationItem
 class ProductPipeline(object):
     def __init__(self):
         try:
-            self.conn = MySQLdb.connect(host='localhost',database='compareprice',user='root',password='')
+            self.conn = MySQLdb.connect(host='localhost',database='system_compare',user='root',password='')
             self.cursor = self.conn.cursor()
             print("MySQL connection is connected")
 
@@ -66,7 +66,7 @@ class ProductPipeline(object):
             self.cursor.execute(query_check_count,record)
             count_result=self.cursor.fetchone()
             count=count_result[0]
-            if(count>30):
+            if(count>50):
                 query_first_row = """DELETE FROM reviews WHERE product_id = %s ORDER BY created_at ASC LIMIT 1"""
                 self.cursor.execute(query_first_row,record)
                 self.conn.commit()
@@ -127,8 +127,8 @@ class ProductPipeline(object):
                 return self.updated_for_product(item,product_id)
         if isinstance(item, SpecificationItem):
             return self.store_specification(item)
-        elif isinstance(item, RatingItem):
-            return self.updated_rating_for_product(item)
+        elif isinstance(item, ReviewItem):
+            return self.store_review(item)
         else:
             return
         

@@ -43,6 +43,7 @@ class CrawlerSpider(Spider):
             item['battery'] = 'Not update'
             item['ram'] = None
             item['cpu'] = None
+            item['average_rating'] = None
             item['operating_system'] =None
             if(price is not None and product_name.find('\u0110\u1ed3ng h\u1ed3') < 0 and product_name.find('V\xd2NG') < 0 and product_name.find('Vòng') < 0):
                 item['display'] = specification.xpath('div[@class="fs-lpil-if"]/div[@class="fs-lpil-tsul"]/ul/li[1]/text()').extract_first()

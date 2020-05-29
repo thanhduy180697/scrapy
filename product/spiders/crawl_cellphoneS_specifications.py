@@ -25,6 +25,7 @@ class CrawlerSpider(Spider):
     index = 1
     page = 0
     count = 0
+    link_product = {}
 
     script = """
         function main(splash)
@@ -44,10 +45,10 @@ class CrawlerSpider(Spider):
         """
 
     def start_requests(self):
-        # for url in self.start_urls:
-        #     yield SplashRequest(url=url,callback=self.parse, args= {"wait" : 3})
-        yield SplashRequest(url="https://cellphones.com.vn/reamle-c3i.html",callback=self.parse_item,args= {"wait" : 3},meta={
-                            "splash": {"endpoint": "execute", "args": {"lua_source": self.script}} , "product_name" : "Realme C3i"})  
+        for url in self.start_urls:
+            yield SplashRequest(url=url,callback=self.parse, args= {"wait" : 3})
+        # yield SplashRequest(url="https://cellphones.com.vn/reamle-c3i.html",callback=self.parse_item,args= {"wait" : 3},meta={
+        #                     "splash": {"endpoint": "execute", "args": {"lua_source": self.script}} , "product_name" : "Realme C3i"})  
     def parse(self, response):
         
         products = Selector(response).xpath('//div[@class="products-container"]/ul[@class="cols cols-5"]/li')
@@ -75,9 +76,6 @@ class CrawlerSpider(Spider):
         if(self.count == self.page):
             for key,value in product.items():
                 count_product += 1
-                if(count_product == 20):
-                    time.sleep(15)
-                    count_product = 0
                 yield SplashRequest(url=key,callback=self.parse_item,args= {"wait" : 3},meta={
                                     "splash": {"endpoint": "execute", "args": {"lua_source": self.script}} , "product_name" : value})  
 

@@ -78,7 +78,7 @@ class CrawlerSpider(Spider):
         item['storage'] = None
         item['ram'] = None
         item['cpu'] = None
-
+        item['average_rating'] = None
         for i in range(11):
             item_information=response.xpath('//ul[@class="parameter "]/li[{}]/span/text()'.format(i+1)).extract_first()
             item_information_temp=response.xpath('//ul[@class="parameter "]/li[{}]/span/a/text()'.format(i+1)).extract_first()

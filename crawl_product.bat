@@ -7,7 +7,7 @@ rem TIMEOUT /T 60
 rem START cmd.exe /C docker run -p 8050:8050 scrapinghub/splash
 rem taskkill /IM cmd.exe
 
-TIMEOUT /T 10
+
 CD cmd.exe "C:\Python\product\product\spiders"
 
 CALL cmd.exe /C "C:\Python\Python35\python.exe" -m scrapy crawl crawler_product_tgdd
@@ -17,11 +17,11 @@ scrapy crawl crawler_product_viettelstore
 TIMEOUT /T 5
 scrapy crawl crawler_product_fpt
 TIMEOUT /T 5
-scrapy crawl crawler_product_cellphoneS
-TIMEOUT /T 5
 scrapy crawl crawler_product_hoanghamobile
 TIMEOUT /T 5
 scrapy crawl crawler_product_dienmaycholon
+TIMEOUT /T 5
+scrapy crawl crawler_product_cellphoneS
 TIMEOUT /T 5
 REM scrapy crawl crawler_reviews_tgdd
 REM TIMEOUT /T 5
